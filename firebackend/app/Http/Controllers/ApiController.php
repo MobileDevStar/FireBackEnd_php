@@ -100,16 +100,29 @@ class ApiController extends Controller
         ->withDatabaseUri('https://firebackend-2b477.firebaseio.com/')
         ->create();
 
+        $auth = $firebase->getAuth();
+        $userProperties = [
+            'email' => $email,
+            'emailVerified' => false,
+            'password' => $password,
+            'displayName' => $username,
+            'photoUrl' => '',
+            'disabled' => false,
+        ];
+        
+        $createdUser = $auth->createUser($userProperties);
+
         $database = $firebase->getDatabase();
 
         $newPost = $database
-        ->getReference('blog/posts')
-        ->push([
-        'title' => $email ,
-        'category' => $password
-        ]);
+        ->getReference('users/' .$createdUser->uid)
+        ->set($createdUser);
 
-        echo $email .$username .$password;
+            if ($createdUser == null) {
+                echo "err";
+            } else {
+                echo print_r($createdUser->uid);
+            }
        // $data = "dsssssssssssssss";
      //   return $data;
     }
